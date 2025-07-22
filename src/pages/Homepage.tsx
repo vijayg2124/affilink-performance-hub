@@ -58,19 +58,19 @@ const Homepage = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center bg-gradient-elegant overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-transparent to-accent/20" />
+      <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-card to-muted overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-accent/10" />
         <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center max-w-4xl mx-auto text-white space-y-8">
+          <div className="text-center max-w-4xl mx-auto text-foreground space-y-8">
             <h1 className="text-6xl lg:text-7xl font-bold tracking-tight">
               The Ultimate
-              <span className="block bg-gradient-to-r from-accent via-primary-glow to-white bg-clip-text text-transparent">
+              <span className="block bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
                 Affiliate Marketing
               </span>
               Platform
             </h1>
             
-            <p className="text-xl lg:text-2xl text-white/90 leading-relaxed max-w-3xl mx-auto">
+            <p className="text-xl lg:text-2xl text-muted-foreground leading-relaxed max-w-3xl mx-auto">
               Maximize your affiliate revenue with smart link management, real-time analytics, 
               A/B testing, and comprehensive tracking across all major affiliate platforms.
             </p>
@@ -78,7 +78,7 @@ const Homepage = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button 
                 size="lg" 
-                className="bg-white text-primary hover:bg-white/90 font-semibold px-8 py-6 text-lg group"
+                className="bg-gradient-primary text-white hover:opacity-90 font-semibold px-8 py-6 text-lg group shadow-lg"
                 asChild
               >
                 <Link to="/auth">
@@ -89,7 +89,7 @@ const Homepage = () => {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="border-white/30 text-white hover:bg-white/10 px-8 py-6 text-lg"
+                className="border-primary/30 text-primary hover:bg-primary/10 px-8 py-6 text-lg"
               >
                 Watch Demo
               </Button>
@@ -98,19 +98,19 @@ const Homepage = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16">
               <div className="text-center">
                 <div className="text-3xl font-bold">99.9%</div>
-                <div className="text-white/70">Uptime</div>
+                <div className="text-muted-foreground">Uptime</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold">10M+</div>
-                <div className="text-white/70">Links Tracked</div>
+                <div className="text-muted-foreground">Links Tracked</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold">50K+</div>
-                <div className="text-white/70">Active Users</div>
+                <div className="text-muted-foreground">Active Users</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold">$2M+</div>
-                <div className="text-white/70">Revenue Tracked</div>
+                <div className="text-muted-foreground">Revenue Tracked</div>
               </div>
             </div>
           </div>
@@ -131,7 +131,7 @@ const Homepage = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature, index) => (
-              <Card key={index} className="border-0 bg-gradient-subtle shadow-elegant hover:shadow-glow transition-all duration-300 group">
+              <Card key={index} className="border-0 bg-gradient-card shadow-elegant hover:shadow-glow transition-all duration-300 group">
                 <CardContent className="p-8 text-center space-y-4">
                   <div className="w-16 h-16 mx-auto rounded-full bg-gradient-primary flex items-center justify-center group-hover:scale-110 transition-transform">
                     <feature.icon className="h-8 w-8 text-white" />
@@ -146,7 +146,7 @@ const Homepage = () => {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-24 bg-gradient-subtle">
+      <section className="py-24 bg-gradient-card">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8">
@@ -184,15 +184,15 @@ const Homepage = () => {
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
                     <h3 className="text-2xl font-bold">Revenue Dashboard</h3>
-                    <div className="text-3xl font-bold text-primary">$24,567</div>
+                    <div className="text-3xl font-bold text-success">$24,567</div>
                   </div>
                   
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center p-4 bg-gradient-subtle rounded-lg">
+                    <div className="text-center p-4 bg-muted rounded-lg">
                       <div className="text-2xl font-bold text-primary">1,234</div>
                       <div className="text-sm text-muted-foreground">Total Clicks</div>
                     </div>
-                    <div className="text-center p-4 bg-gradient-subtle rounded-lg">
+                    <div className="text-center p-4 bg-muted rounded-lg">
                       <div className="text-2xl font-bold text-accent">89</div>
                       <div className="text-sm text-muted-foreground">Conversions</div>
                     </div>
@@ -220,7 +220,7 @@ const Homepage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-gradient-elegant text-white">
+      <section className="py-24 bg-gradient-primary text-white">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-4xl lg:text-5xl font-bold mb-6">
             Ready to 10x Your Affiliate Revenue?

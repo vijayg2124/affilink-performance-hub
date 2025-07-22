@@ -83,38 +83,38 @@ const Auth = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-elegant flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-background via-card to-muted flex items-center justify-center p-4">
       <div className="w-full max-w-6xl flex gap-8 items-center">
         {/* Left side - Hero Content */}
-        <div className="flex-1 text-white space-y-8 max-w-xl">
+        <div className="flex-1 text-foreground space-y-8 max-w-xl">
           <div className="space-y-4">
             <h1 className="text-5xl font-bold tracking-tight">
               Maximize Your
-              <span className="block bg-gradient-to-r from-accent via-primary-glow to-white bg-clip-text text-transparent">
+              <span className="block bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
                 Affiliate Revenue
               </span>
             </h1>
-            <p className="text-xl text-white/90 leading-relaxed">
+            <p className="text-xl text-muted-foreground leading-relaxed">
               Transform your affiliate marketing with smart link management, real-time analytics, and A/B testing. 
               Track every click, optimize every conversion.
             </p>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <div className="flex items-center gap-3 text-white/80">
-              <div className="p-2 rounded-lg bg-white/10 backdrop-blur-sm">
+            <div className="flex items-center gap-3 text-muted-foreground">
+              <div className="p-2 rounded-lg bg-primary/10 backdrop-blur-sm">
                 <Link2 className="h-5 w-5" />
               </div>
               <span className="text-sm font-medium">Smart Link Management</span>
             </div>
-            <div className="flex items-center gap-3 text-white/80">
-              <div className="p-2 rounded-lg bg-white/10 backdrop-blur-sm">
+            <div className="flex items-center gap-3 text-muted-foreground">
+              <div className="p-2 rounded-lg bg-primary/10 backdrop-blur-sm">
                 <TrendingUp className="h-5 w-5" />
               </div>
               <span className="text-sm font-medium">Revenue Tracking</span>
             </div>
-            <div className="flex items-center gap-3 text-white/80">
-              <div className="p-2 rounded-lg bg-white/10 backdrop-blur-sm">
+            <div className="flex items-center gap-3 text-muted-foreground">
+              <div className="p-2 rounded-lg bg-primary/10 backdrop-blur-sm">
                 <BarChart3 className="h-5 w-5" />
               </div>
               <span className="text-sm font-medium">Real-time Analytics</span>
@@ -124,22 +124,22 @@ const Auth = () => {
 
         {/* Right side - Auth Form */}
         <div className="w-full max-w-md">
-          <Card className="border-0 bg-white/10 backdrop-blur-xl shadow-elegant">
+          <Card className="border-0 bg-card/80 backdrop-blur-xl shadow-elegant">
             <CardHeader className="text-center space-y-2">
-              <CardTitle className="text-2xl font-bold text-white">
+              <CardTitle className="text-2xl font-bold text-foreground">
                 Join AffiliateHub
               </CardTitle>
-              <CardDescription className="text-white/70">
+              <CardDescription className="text-muted-foreground">
                 Start optimizing your affiliate marketing today
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Tabs defaultValue="signin" className="w-full">
                 <TabsList className="grid w-full grid-cols-2 bg-white/5">
-                  <TabsTrigger value="signin" className="text-white data-[state=active]:bg-white/20">
+                  <TabsTrigger value="signin" className="text-foreground data-[state=active]:bg-primary/20">
                     Sign In
                   </TabsTrigger>
-                  <TabsTrigger value="signup" className="text-white data-[state=active]:bg-white/20">
+                  <TabsTrigger value="signup" className="text-foreground data-[state=active]:bg-primary/20">
                     Sign Up
                   </TabsTrigger>
                 </TabsList>
@@ -147,7 +147,7 @@ const Auth = () => {
                 <TabsContent value="signin" className="space-y-4">
                   <form onSubmit={handleSignIn} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="signin-email" className="text-white">Email</Label>
+                      <Label htmlFor="signin-email" className="text-foreground">Email</Label>
                       <Input
                         id="signin-email"
                         type="email"
@@ -155,11 +155,11 @@ const Auth = () => {
                         value={signInData.email}
                         onChange={(e) => setSignInData({ ...signInData, email: e.target.value })}
                         required
-                        className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
+                        className="bg-background/50 border-border text-foreground placeholder:text-muted-foreground"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="signin-password" className="text-white">Password</Label>
+                      <Label htmlFor="signin-password" className="text-foreground">Password</Label>
                       <Input
                         id="signin-password"
                         type="password"
@@ -167,13 +167,13 @@ const Auth = () => {
                         value={signInData.password}
                         onChange={(e) => setSignInData({ ...signInData, password: e.target.value })}
                         required
-                        className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
+                        className="bg-background/50 border-border text-foreground placeholder:text-muted-foreground"
                       />
                     </div>
                     <Button 
                       type="submit" 
                       disabled={isLoading}
-                      className="w-full bg-white text-primary hover:bg-white/90 font-semibold"
+                      className="w-full bg-gradient-primary text-white hover:opacity-90 font-semibold"
                     >
                       {isLoading ? "Signing in..." : "Sign In"}
                     </Button>
@@ -183,7 +183,7 @@ const Auth = () => {
                 <TabsContent value="signup" className="space-y-4">
                   <form onSubmit={handleSignUp} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="signup-name" className="text-white">Full Name</Label>
+                      <Label htmlFor="signup-name" className="text-foreground">Full Name</Label>
                       <Input
                         id="signup-name"
                         type="text"
@@ -191,11 +191,11 @@ const Auth = () => {
                         value={signUpData.fullName}
                         onChange={(e) => setSignUpData({ ...signUpData, fullName: e.target.value })}
                         required
-                        className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
+                        className="bg-background/50 border-border text-foreground placeholder:text-muted-foreground"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="signup-email" className="text-white">Email</Label>
+                      <Label htmlFor="signup-email" className="text-foreground">Email</Label>
                       <Input
                         id="signup-email"
                         type="email"
@@ -203,11 +203,11 @@ const Auth = () => {
                         value={signUpData.email}
                         onChange={(e) => setSignUpData({ ...signUpData, email: e.target.value })}
                         required
-                        className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
+                        className="bg-background/50 border-border text-foreground placeholder:text-muted-foreground"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="signup-password" className="text-white">Password</Label>
+                      <Label htmlFor="signup-password" className="text-foreground">Password</Label>
                       <Input
                         id="signup-password"
                         type="password"
@@ -215,13 +215,13 @@ const Auth = () => {
                         value={signUpData.password}
                         onChange={(e) => setSignUpData({ ...signUpData, password: e.target.value })}
                         required
-                        className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
+                        className="bg-background/50 border-border text-foreground placeholder:text-muted-foreground"
                       />
                     </div>
                     <Button 
                       type="submit" 
                       disabled={isLoading}
-                      className="w-full bg-white text-primary hover:bg-white/90 font-semibold"
+                      className="w-full bg-gradient-primary text-white hover:opacity-90 font-semibold"
                     >
                       {isLoading ? "Creating account..." : "Create Account"}
                     </Button>
