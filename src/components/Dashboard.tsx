@@ -70,7 +70,8 @@ export function Dashboard({ activeTab, onTabChange }: DashboardProps) {
         .select(`
           *,
           clicks:clicks(count),
-          conversions:conversions(count, sum:commission_amount)
+          conversions_count:conversions(count),
+          conversions_sum:conversions(sum:commission_amount)
         `)
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
@@ -85,8 +86,8 @@ export function Dashboard({ activeTab, onTabChange }: DashboardProps) {
 
       const topLinksData: TopLink[] = links?.map(link => {
         const clicks = link.clicks?.[0]?.count || 0;
-        const conversions = link.conversions?.[0]?.count || 0;
-        const revenue = link.conversions?.[0]?.sum || 0;
+        const conversions = link.conversions_count?.[0]?.count || 0;
+        const revenue = link.conversions_sum?.[0]?.sum || 0;
 
         totalClicks += clicks;
         totalRevenue += revenue;

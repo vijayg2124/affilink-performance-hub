@@ -82,7 +82,8 @@ export function LinkManager() {
         .select(`
           *,
           clicks:clicks(count),
-          conversions:conversions(count, sum:commission_amount)
+          conversions_count:conversions(count),
+          conversions_sum:conversions(sum:commission_amount)
         `)
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
@@ -92,8 +93,8 @@ export function LinkManager() {
       const linksWithStats = data.map(link => ({
         ...link,
         clicks: link.clicks?.[0]?.count || 0,
-        conversions: link.conversions?.[0]?.count || 0,
-        revenue: link.conversions?.[0]?.sum || 0
+        conversions: link.conversions_count?.[0]?.count || 0,
+        revenue: link.conversions_sum?.[0]?.sum || 0
       }));
 
       setLinks(linksWithStats);
