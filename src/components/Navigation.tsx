@@ -11,9 +11,12 @@ import {
   Bell,
   Search,
   Menu,
-  X
+  X,
+  LogOut
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 
 interface NavigationProps {
   activeTab: string;
@@ -29,6 +32,29 @@ const navigationItems = [
 
 export function Navigation({ activeTab, onTabChange }: NavigationProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, signOut } = useAuth();
+  const { toast } = useToast();
+
+  const handleSignOut = async () => {
+    const { error } = await signOut();
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to sign out",
+        variant: "destructive"
+      });
+    } else {
+      toast({
+        title: "Signed out",
+        description: "You have been successfully signed out"
+      });
+    }
+  };
+
+  const getUserDisplayName = () => {
+    if (!user?.email) return "User";
+    return user.email.split('@')[0];
+  };
 
   return (
     <>
@@ -41,7 +67,7 @@ export function Navigation({ activeTab, onTabChange }: NavigationProps) {
               <LinkIcon className="h-4 w-4 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-foreground">AffiLink</h1>
+              <h1 className="text-xl font-bold text-foreground">AffiliateHub</h1>
               <p className="text-xs text-muted-foreground">Performance Hub</p>
             </div>
           </div>
@@ -95,9 +121,18 @@ export function Navigation({ activeTab, onTabChange }: NavigationProps) {
               <User className="h-4 w-4 text-white" />
             </div>
             <div className="text-sm">
-              <div className="font-medium text-foreground">John Doe</div>
+              <div className="font-medium text-foreground">{getUserDisplayName()}</div>
               <div className="text-xs text-muted-foreground">Pro Plan</div>
             </div>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={handleSignOut}
+              title="Sign out"
+              className="ml-2"
+            >
+              <LogOut className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </nav>
@@ -111,7 +146,7 @@ export function Navigation({ activeTab, onTabChange }: NavigationProps) {
               <LinkIcon className="h-4 w-4 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-foreground">AffiLink</h1>
+              <h1 className="text-lg font-bold text-foreground">AffiliateHub</h1>
               <p className="text-xs text-muted-foreground">Performance Hub</p>
             </div>
           </div>
@@ -173,11 +208,19 @@ export function Navigation({ activeTab, onTabChange }: NavigationProps) {
                   <User className="h-4 w-4 text-white" />
                 </div>
                 <div className="flex-1">
-                  <div className="font-medium text-foreground text-sm">John Doe</div>
+                  <div className="font-medium text-foreground text-sm">{getUserDisplayName()}</div>
                   <div className="text-xs text-muted-foreground">Pro Plan</div>
                 </div>
                 <Button variant="ghost" size="sm">
                   <Settings className="h-4 w-4" />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={handleSignOut}
+                  title="Sign out"
+                >
+                  <LogOut className="h-4 w-4" />
                 </Button>
               </div>
             </div>

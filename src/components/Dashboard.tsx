@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,59 +17,110 @@ import {
 import { LinkManager } from "./LinkManager";
 import { AnalyticsDashboard } from "./AnalyticsDashboard";
 import { RevenueTracker } from "./RevenueTracker";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 interface DashboardProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
 }
 
-// Mock data for demonstration
-const mockStats = {
-  totalRevenue: 24750.50,
-  totalClicks: 12843,
-  activeLinks: 47,
-  conversionRate: 3.2,
-  revenueChange: 12.5,
-  clicksChange: -2.1,
-  linksChange: 8.0,
-  conversionChange: 0.8
-};
+interface DashboardStats {
+  totalRevenue: number;
+  totalClicks: number;
+  activeLinks: number;
+  conversionRate: number;
+}
 
-const mockRecentLinks = [
-  {
-    id: "1",
-    name: "iPhone 15 Pro Review",
-    url: "https://amzn.to/abc123",
-    clicks: 1547,
-    revenue: 2340.50,
-    platform: "Amazon",
-    status: "active",
-    ctr: 3.2
-  },
-  {
-    id: "2", 
-    name: "Best Laptops 2024",
-    url: "https://flipkart.com/xyz789",
-    clicks: 892,
-    revenue: 1850.25,
-    platform: "Flipkart",
-    status: "active",
-    ctr: 2.8
-  },
-  {
-    id: "3",
-    name: "Digital Marketing Course",
-    url: "https://clickbank.net/def456",
-    clicks: 456,
-    revenue: 890.00,
-    platform: "ClickBank",
-    status: "paused",
-    ctr: 4.1
-  }
-];
+interface TopLink {
+  id: string;
+  title: string;
+  short_url: string;
+  platform: string;
+  is_active: boolean;
+  clicks: number;
+  revenue: number;
+  conversions: number;
+}
 
 export function Dashboard({ activeTab, onTabChange }: DashboardProps) {
-  const [selectedLink, setSelectedLink] = useState<string | null>(null);
+  const [stats, setStats] = useState<DashboardStats>({
+    totalRevenue: 0,
+    totalClicks: 0,
+    activeLinks: 0,
+    conversionRate: 0
+  });
+  const [topLinks, setTopLinks] = useState<TopLink[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      fetchDashboardData();
+    }
+  }, [user]);
+
+  const fetchDashboardData = async () => {
+    if (!user) return;
+
+    try {
+      // Fetch links with their stats
+      const { data: links, error: linksError } = await supabase
+        .from('affiliate_links')
+        .select(`
+          *,
+          clicks:clicks(count),
+          conversions:conversions(count, commission_amount)
+        `)
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (linksError) throw linksError;
+
+      // Calculate stats
+      let totalClicks = 0;
+      let totalRevenue = 0;
+      let totalConversions = 0;
+      const activeLinks = links?.filter(link => link.is_active).length || 0;
+
+      const topLinksData: TopLink[] = links?.map(link => {
+        const clicks = link.clicks?.[0]?.count || 0;
+        const conversions = link.conversions?.length || 0;
+        const revenue = link.conversions?.reduce((sum: number, conv: any) => 
+          sum + Number(conv.commission_amount), 0) || 0;
+
+        totalClicks += clicks;
+        totalRevenue += revenue;
+        totalConversions += conversions;
+
+        return {
+          id: link.id,
+          title: link.title,
+          short_url: link.short_url,
+          platform: link.platform,
+          is_active: link.is_active,
+          clicks,
+          conversions,
+          revenue
+        };
+      }).slice(0, 5) || [];
+
+      const conversionRate = totalClicks > 0 ? (totalConversions / totalClicks) * 100 : 0;
+
+      setStats({
+        totalRevenue,
+        totalClicks,
+        activeLinks,
+        conversionRate
+      });
+
+      setTopLinks(topLinksData);
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const renderStatCard = (
     title: string,
@@ -114,33 +165,41 @@ export function Dashboard({ activeTab, onTabChange }: DashboardProps) {
     return <RevenueTracker />;
   }
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {renderStatCard(
           "Total Revenue",
-          mockStats.totalRevenue.toFixed(2),
-          mockStats.revenueChange,
+          stats.totalRevenue.toFixed(2),
+          12.5,
           <DollarSign className="h-4 w-4" />,
           "$"
         )}
         {renderStatCard(
           "Total Clicks",
-          mockStats.totalClicks,
-          mockStats.clicksChange,
+          stats.totalClicks,
+          -2.1,
           <MousePointer className="h-4 w-4" />
         )}
         {renderStatCard(
           "Active Links",
-          mockStats.activeLinks,
-          mockStats.linksChange,
+          stats.activeLinks,
+          8.0,
           <LinkIcon className="h-4 w-4" />
         )}
         {renderStatCard(
           "Conversion Rate",
-          `${mockStats.conversionRate}%`,
-          mockStats.conversionChange,
+          `${stats.conversionRate.toFixed(2)}%`,
+          0.8,
           <BarChart3 className="h-4 w-4" />
         )}
       </div>
@@ -159,70 +218,86 @@ export function Dashboard({ activeTab, onTabChange }: DashboardProps) {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {mockRecentLinks.map((link) => (
-              <div 
-                key={link.id}
-                className="flex items-center justify-between p-4 border border-border rounded-lg bg-gradient-card hover:shadow-glow transition-smooth"
-              >
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h4 className="font-medium text-foreground">{link.name}</h4>
-                    <Badge 
-                      variant={link.status === "active" ? "default" : "secondary"}
-                      className={link.status === "active" ? "status-success" : ""}
-                    >
-                      {link.status}
-                    </Badge>
-                    <Badge variant="outline" className="text-xs">
-                      {link.platform}
-                    </Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground truncate max-w-md">
-                    {link.url}
-                  </p>
-                </div>
-                
-                <div className="flex items-center gap-6 text-sm">
-                  <div className="text-center">
-                    <div className="font-semibold text-foreground">{link.clicks.toLocaleString()}</div>
-                    <div className="text-muted-foreground">Clicks</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="font-semibold text-success">${link.revenue.toFixed(2)}</div>
-                    <div className="text-muted-foreground">Revenue</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="font-semibold text-primary">{link.ctr}%</div>
-                    <div className="text-muted-foreground">CTR</div>
+            {topLinks.length === 0 ? (
+              <div className="text-center py-8">
+                <LinkIcon className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                <h3 className="text-lg font-semibold text-foreground mb-2">No links yet</h3>
+                <p className="text-muted-foreground mb-4">
+                  Create your first affiliate link to start tracking performance
+                </p>
+                <Button onClick={() => onTabChange("links")} className="btn-hero">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Create First Link
+                </Button>
+              </div>
+            ) : (
+              topLinks.map((link) => (
+                <div 
+                  key={link.id}
+                  className="flex items-center justify-between p-4 border border-border rounded-lg bg-gradient-card hover:shadow-glow transition-smooth"
+                >
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h4 className="font-medium text-foreground">{link.title}</h4>
+                      <Badge 
+                        variant={link.is_active ? "default" : "secondary"}
+                        className={link.is_active ? "status-success" : ""}
+                      >
+                        {link.is_active ? "active" : "inactive"}
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        {link.platform}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground truncate max-w-md">
+                      {link.short_url}
+                    </p>
                   </div>
                   
-                  <div className="flex gap-2">
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={() => onTabChange("analytics")}
-                      className="h-8 w-8 p-0"
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      className="h-8 w-8 p-0"
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                  <div className="flex items-center gap-6 text-sm">
+                    <div className="text-center">
+                      <div className="font-semibold text-foreground">{link.clicks.toLocaleString()}</div>
+                      <div className="text-muted-foreground">Clicks</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="font-semibold text-success">${link.revenue.toFixed(2)}</div>
+                      <div className="text-muted-foreground">Revenue</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="font-semibold text-primary">
+                        {link.clicks > 0 ? ((link.conversions / link.clicks) * 100).toFixed(1) : 0}%
+                      </div>
+                      <div className="text-muted-foreground">CTR</div>
+                    </div>
+                    
+                    <div className="flex gap-2">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => onTabChange("analytics")}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        className="h-8 w-8 p-0"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </CardContent>
       </Card>
